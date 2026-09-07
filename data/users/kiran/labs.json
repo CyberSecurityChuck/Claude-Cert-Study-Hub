@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "labs": [
+    {
+      "title": "Lab 1 — Clear vs. Vague Prompt (Compare)",
+      "steps": [
+        {
+          "text": "step-1-new-chat-vague-prompt-paste",
+          "slug": "step-1-new-chat-vague-prompt-paste",
+          "done": false
+        },
+        {
+          "text": "step-2-new-chat-clear-prompt-paste",
+          "slug": "step-2-new-chat-clear-prompt-paste",
+          "done": false
+        }
+      ]
+    }
+  ]
+}

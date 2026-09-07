@@ -1,0 +1,23 @@
+<h1 id="agentic-loops">Agentic Loops</h1>
+
+<p>An agentic loop is a continuous cycle where Claude interacts with its environment, executes code or tools, observes the results, and decides the next step based on that feedback. Instead of just answering in a single pass, the model runs iteratively until it determines the goal is achieved or a stop condition is met.</p>
+
+<p>Understanding this loop is critical for the exam because it forms the execution backbone of autonomous multi-step workflows, tool use, and complex orchestration patterns.</p>
+
+<ul>
+<li><strong>Perceive and Plan:</strong> The model receives a prompt, analyzes the user's intent, and consults its available tools to formulate a plan of action.</li>
+<li><strong>Action Execution:</strong> Claude does not execute code directly on your machine; instead, it outputs structured data (like a tool use block) requesting the client application to run a specific function or API call.</li>
+<li><strong>Observation:</strong> The client application executes the requested tool, captures the output (success, failure, or data payload), and feeds that result back into Claude's context window.</li>
+<li><strong>Iteration or Termination:</strong> Claude evaluates the returned observation. If the task is incomplete, it loops back to plan and execute the next step; if complete, it provides a final answer to the user.</li>
+<li><strong>State Management:</strong> Maintaining the conversation history across turns is vital so the model remembers what tools it already ran and what errors it encountered.</li>
+</ul>
+
+<ul>
+<li><strong>Trap:</strong> Assuming Claude runs code autonomously on Anthropic's servers. <strong>Correction:</strong> Claude only <em>requests</em> tool execution by generating structured output; your application code must securely execute the tool and return the output.</li>
+<li><strong>Trap:</strong> Believing agentic loops run infinitely without intervention. <strong>Correction:</strong> You must programmatically set maximum iteration limits (e.g., max 5 loops) to prevent infinite loops and runaway API costs.</li>
+<li><strong>Trap:</strong> Thinking the loop happens magically inside a single API call. <strong>Correction:</strong> Each iteration of an agentic loop requires a distinct API round-trip where your orchestration code sends the tool results back to Claude.</li>
+</ul>
+
+<p>An agentic loop is like a Security Operations Center (SOC) automated incident response playbook in Microsoft Sentinel, where an automation rule triggers a script to isolate an infected M365 user account, reads the remediation logs, and decides whether to escalate to a human analyst based on the outcome.</p>
+
+<section class="check-block"><h3>Check yourself</h3><div class="check-card" data-check-card><div class="check-q">Q: What does Claude actually output when it decides to use a tool within an agentic loop?</div><button type="button" class="check-toggle" data-check-toggle aria-expanded="false">Show answer</button><div class="check-answer" hidden>A: Claude outputs structured data requesting the client application to run a specific function, rather than executing the code itself.</div></div><div class="check-card" data-check-card><div class="check-q">Q: Why must developers implement a maximum iteration limit for agentic loops?</div><button type="button" class="check-toggle" data-check-toggle aria-expanded="false">Show answer</button><div class="check-answer" hidden>A: To prevent infinite loops, runaway API costs, and excessive resource consumption if Claude gets stuck in a retry pattern.</div></div><div class="check-card" data-check-card><div class="check-q">Q: How does the observation phase work in an agentic loop?</div><button type="button" class="check-toggle" data-check-toggle aria-expanded="false">Show answer</button><div class="check-answer" hidden>A: The client application executes the tool requested by Claude, captures the resulting data or error, and feeds it back into Claude&#39;s context window for the next turn.</div></div></section>

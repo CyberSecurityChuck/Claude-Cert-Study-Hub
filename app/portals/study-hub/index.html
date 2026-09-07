@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32x32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/brand/favicon-16x16.png?v=2">
+<link rel="apple-touch-icon" href="/assets/brand/cca_favicon_logomark.png?v=2">
+<link rel="stylesheet" href="assets/theme.css?v=4">
+<link rel="stylesheet" href="assets/learn.css?v=11">
+</head>
+<body>
+
+<!-- ============ SAAS AUTH MODAL ============ -->
+<div class="auth-modal hidden" id="authModal" aria-modal="true" role="dialog" hidden>
+  <div class="auth-card study-hub-theme">
+    <div class="auth-card-top">
+      <div class="auth-brand-badge">
+        <img src="/assets/brand/cca_favicon_logomark.png" alt="Claude Certified Architect" class="auth-badge-img">
+      </div>
+      <div class="auth-track-chip">Study Hub · Foundations Track</div>
+      <h2 class="auth-title" id="authTitle">Master the Architect Curriculum</h2>
+      <p class="auth-subtitle" id="authSub">30 interactive syllabus modules, hands-on architectural code labs, interactive knowledge checks, and 24/7 AI tutoring with Nyx.</p>
+    </div>
+
+    <div class="auth-features-row">
+      <div class="feature-pill"><span class="feature-icon">📚</span> 30 Core Modules</div>
+      <div class="feature-pill"><span class="feature-icon">🧪</span> Hands-on Labs</div>
+      <div class="feature-pill"><span class="feature-icon">💬</span> Nyx AI Tutor</div>
+    </div>
+
+    <form class="auth-form" id="authForm" onsubmit="return false;">
+      <div class="auth-field">
+        <label for="authName">Profile Name</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input id="authName" type="text" maxlength="30" placeholder="e.g. Alex or Vikas" autocomplete="username">
+        </div>
+      </div>
+      <div class="auth-field">
+        <label for="authPass">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input id="authPass" type="password" maxlength="60" placeholder="Enter your password" autocomplete="current-password">
+        </div>
+      </div>
+
+      <div class="auth-actions">
+        <button type="button" class="btn-block btn-primary" id="authSignInBtn">
+          <span>Enter Study Hub</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <button type="button" class="btn-block btn-ghost" id="authCreateBtn">
+          <span>Create Study Profile</span>
+        </button>
+      </div>
+    </form>
+
+    <div class="auth-footer-note">
+      <span class="note-lock">🛡️</span>
+      <span>Secure Local-First Profile · Synced Across Portals</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PROVIDER MODAL ============ -->
+<div class="provider-modal hidden" id="providerModal">
+  <div class="provider-card">
+    <h2>AI provider</h2>
+    <p class="provider-sub">Select a provider + model and paste your API key. Used for module generation and the tutor sidebar.</p>
+    <label>Provider<select id="provProviderSel"></select></label>
+    <label>Model<select id="provModelSel"></select></label>
+    <label>Custom model id (optional)<input id="provModelOverride" type="text" placeholder="Override model id"></label>
+    <label>API key<input id="provApiKey" type="password" placeholder="sk-..." autocomplete="off"></label>
+    <div class="provider-actions">
+      <button class="btn ghost" id="provCancelBtn">Cancel</button>
+      <button class="btn primary" id="provSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOPBAR ============ -->
+<header class="topbar" id="topbar">
+  <button class="icon-btn" id="navToggle" aria-label="Toggle navigation">☰</button>
+  <a href="#/home" class="brand" id="brandLink" title="Go to home">
+    <span class="brand-mark"><img src="/assets/brand/cca_favicon_logomark.png" alt="Claude Certified Architect" class="brand-mark-img"></span>
+    <span class="brand-text">
+      <span class="brand-title">Claude Architect</span>
+      <span class="brand-sub">Study Hub · Foundations</span>
+    </span>
+  </a>
+  <div class="breadcrumb" id="breadcrumb">Home</div>
+  <div class="topbar-actions">
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+      <span class="theme-icon" id="themeIcon">☀️</span>
+    </button>
+    <button class="icon-btn" id="providerBtn" aria-label="Configure AI Provider" title="Configure AI Provider">⚡ AI Provider</button>
+    <button class="icon-btn" id="tutorToggle" aria-label="Toggle tutor sidebar">💬 Nyx</button>
+    <a href="/exam-center/" class="icon-btn" target="_blank" rel="noopener" title="Open Exam Center in a new tab">📋 Exam Center</a>
+    <div class="account-menu" id="accountMenu">
+      <button type="button" class="avatar-pill" id="accountBtn" aria-label="Account menu" aria-expanded="false" style="display:none">
+        <span class="avatar" id="avatarInitial">?</span>
+        <span id="avatarName">User</span>
+      </button>
+      <div class="account-dropdown hidden" id="accountDropdown">
+        <div class="profile-card-header">
+          <div class="profile-card-avatar" id="dropdownAvatar">?</div>
+          <div class="profile-card-user">
+            <div class="profile-card-name" id="accountUserName">User</div>
+            <div class="profile-card-handle" id="accountUserHandle">@user</div>
+          </div>
+        </div>
+        <div class="profile-card-badge">
+          <span class="status-dot"></span> Active · Foundations Track
+        </div>
+        <div class="profile-card-details">
+          <div class="profile-detail-row">
+            <span class="detail-label">Certification</span>
+            <span class="detail-value">Claude Architect</span>
+          </div>
+          <div class="exam-date-editor-host" id="examDateEditor"></div>
+          <div class="profile-detail-row">
+            <span class="detail-label">Passing Target</span>
+            <span class="detail-value">720 / 1000</span>
+          </div>
+        </div>
+        <div class="profile-card-divider"></div>
+        <button type="button" class="profile-signout-btn" id="signOutBtn">
+          <span class="signout-icon">🚪</span> Sign out
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ APP GRID ============ -->
+<div class="app">
+
+  <!-- LEFT NAV -->
+  <nav id="leftNav">
+    <div class="nav-section">Study</div>
+    <a class="nav-item" data-route="home" href="#/home"><span class="icon">⌂</span> Home</a>
+    <a class="nav-item" data-route="syllabus" href="#/syllabus"><span class="icon">≡</span> Syllabus</a>
+    <a class="nav-item" data-route="knowledge" href="#/knowledge"><span class="icon">📖</span> Knowledge</a>
+    <a class="nav-item" data-route="labs" href="#/labs"><span class="icon">🔬</span> Labs</a>
+    <div class="nav-section">AI Tutor</div>
+    <a class="nav-item" data-route="sessions" href="#/sessions"><span class="icon">💬</span> Nyx sessions</a>
+    <div class="nav-section">Reference</div>
+    <a class="nav-item" data-route="resources" href="#/resources"><span class="icon">🔗</span> Resources</a>
+  </nav>
+
+  <!-- MAIN PANE -->
+  <main id="mainPane"></main>
+
+  <!-- TUTOR SIDEBAR (Nyx) -->
+  <aside id="tutorSidebar" aria-label="Nyx AI study tutor">
+    <div class="chat-header">
+      <div class="chat-header-top">
+        <div class="chat-identity">
+          <div class="chat-avatar-badge nyx-theme">🧠</div>
+          <div class="chat-meta">
+            <div class="chat-name-row">
+              <span class="chat-name">Nyx</span>
+              <span class="chat-status-pill"><span class="pulse-dot"></span> Online</span>
+            </div>
+            <span class="chat-subtitle">AI Architecture Tutor</span>
+          </div>
+        </div>
+        <div class="chat-top-actions">
+          <button type="button" id="tutorCollapse" class="chat-icon-btn" title="Collapse sidebar" aria-label="Collapse sidebar">›</button>
+        </div>
+      </div>
+
+      <div class="chat-controls-bar">
+        <div class="chat-main-buttons">
+          <button type="button" id="tutorNewBtn" class="chat-btn-primary" title="Start a new chat session">+ New Chat</button>
+          <button type="button" id="tutorListBtn" class="chat-btn-ghost" title="Browse saved sessions">📜 Sessions</button>
+        </div>
+        <div class="chat-provider-badge" id="tutorProviderBar">
+          <span id="tutorProviderInfo">⚡ Provider: Not set</span>
+          <button type="button" id="tutorProviderBtn" class="chat-gear-link" title="Configure AI Provider">⚙️</button>
+        </div>
+      </div>
+    </div>
+    <div class="tutor-log" id="tutorLog">
+      <div class="tutor-empty">
+        <div class="tutor-empty-icon">🧠</div>
+        <h4>Hello! I'm Nyx</h4>
+        <p>Your dedicated AI tutor for the Claude Certified Architect curriculum. Pick a topic below or ask any question:</p>
+        <div class="tutor-prompt-chips">
+          <button type="button" class="tutor-chip" data-prompt="Explain the Agent Loop (perception, reasoning, action) in Claude architectures.">🚀 Agent Loop Stages</button>
+          <button type="button" class="tutor-chip" data-prompt="How do MCP clients and stdio servers communicate?">🔌 MCP Architecture</button>
+          <button type="button" class="tutor-chip" data-prompt="Explain Anthropic Prompt Caching breakpoint rules and minimum token thresholds.">⚡ Prompt Caching</button>
+          <button type="button" class="tutor-chip" data-prompt="What are the essential HITL guardrails when building autonomous agents?">🛡️ HITL &amp; Guardrails</button>
+        </div>
+      </div>
+    </div>
+    <div class="tutor-input-area">
+      <div class="tutor-input-wrap">
+        <textarea id="tutorInput" placeholder="Ask Nyx about Claude architecture, tools, code labs…" rows="2" aria-label="Message Nyx"></textarea>
+        <button type="button" class="send-btn" id="tutorSendBtn" aria-label="Send message to Nyx">
+          <span class="send-btn-icon">↑</span>
+          <span class="send-btn-label">Send</span>
+        </button>
+      </div>
+      <div class="tutor-input-hint">Shift + Enter for new line · Enter to send</div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- ============ FOOTER ============
+     Moved outside the .app grid on purpose so it can sit inside the
+     same horizontal bounds as the main content column. It is NOT a
+     child of the .app grid; the Learn JS mounts it into #mainPane
+     (see Study_Hub/assets/app.js wireFooterIntoMain) so it inherits the
+     column's padding and max-width, aligning with the content cards. -->
+<template id="siteFooterTemplate">
+  <footer class="site-footer" id="siteFooter">
+    <div class="footer-card">
+      <div class="footer-brand-row">
+        <div>
+          <div class="footer-kicker">Built for focused study</div>
+          <div class="footer-title">Claude Certified Architect — Foundations</div>
+        </div>
+        <div class="footer-badge">Local-first study hub</div>
+      </div>
+      <p class="footer-copy">
+        This study hub stores progress locally on this device and in your personal OneDrive folder.
+        Exam facts, dates, weights, and thresholds should be re-verified on the official certification page.
+      </p>
+      <div class="footer-meta">
+        <span>Created by Vikas Pandey</span>
+        <span class="footer-separator">•</span>
+        <a href="mailto:vikas.pandey@insight.com">vikas.pandey@insight.com</a>
+        <span class="footer-separator">•</span>
+        <a href="https://github.com/cybersecuritychuck" target="_blank" rel="noopener">GitHub</a>
+        <span class="footer-separator">•</span>
+        <a href="https://cybersecuritychuck.github.io/Portfolio-v2/" target="_blank" rel="noopener">Portfolio</a>
+        <span class="footer-separator">•</span>
+        <a href="https://linkedin.com/in/vkp1308" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+</template>
+
+<script src="/shared/ai-config.js?v=1"></script>
+<script src="/shared/exam-date.js?v=1"></script>
+<script src="assets/app.js?v=9"></script>
+</body>
+</html>

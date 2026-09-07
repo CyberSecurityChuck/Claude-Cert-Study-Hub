@@ -1,0 +1,3 @@
+claude-cert.linkpc.net {
+  reverse_proxy localhost:8000
+}

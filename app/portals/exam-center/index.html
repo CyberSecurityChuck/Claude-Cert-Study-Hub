@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32x32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/brand/favicon-16x16.png?v=2">
+<link rel="apple-touch-icon" href="/assets/brand/cca_favicon_logomark.png?v=2">
+<link rel="stylesheet" href="assets/styles.css?v=5">
+</head>
+<body>
+
+  <!-- ============ SAAS AUTH MODAL ============ -->
+  <div class="auth-modal hidden" id="authModal" aria-modal="true" role="dialog">
+    <div class="auth-card">
+      <div class="auth-card-top">
+        <div class="auth-brand-badge">
+          <img src="/assets/brand/cca_favicon_logomark.png" alt="Claude Certified Architect" class="auth-badge-img">
+        </div>
+        <div class="auth-track-chip">Exam Center · Foundations Track</div>
+        <h2 class="auth-title" id="authTitle">Ace Your Architect Certification</h2>
+        <p class="auth-subtitle" id="authSub">Real-world scenario questions, timed mock exam simulations, domain readiness diagnostics, and instant AI explanations with Sage.</p>
+      </div>
+
+      <div class="auth-features-row">
+        <div class="feature-pill"><span class="feature-icon">⏱️</span> Timed Mocks</div>
+        <div class="feature-pill"><span class="feature-icon">📊</span> 5-Domain Analytics</div>
+        <div class="feature-pill"><span class="feature-icon">💬</span> Sage AI Mentor</div>
+      </div>
+
+      <div class="auth-status-banner hidden" id="authStatusBanner">
+        <span class="status-icon" id="authStatusIcon">ℹ️</span>
+        <span id="profileStatus">Enter your name and password to continue.</span>
+      </div>
+
+      <form class="auth-form" id="authForm" onsubmit="return false;">
+        <div class="auth-field">
+          <label for="profileNameInput">Profile Name</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input id="profileNameInput" type="text" maxlength="30" placeholder="e.g. Alex or Vikas" autocomplete="username">
+          </div>
+        </div>
+        <div class="auth-field">
+          <label for="profilePasswordInput">Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input id="profilePasswordInput" type="password" maxlength="60" placeholder="Enter your password" autocomplete="current-password">
+          </div>
+        </div>
+
+        <div class="auth-actions">
+          <button type="button" class="btn-block btn-primary" id="signinProfileBtn">
+            <span>Launch Exam Center</span>
+            <span class="btn-arrow">→</span>
+          </button>
+          <button type="button" class="btn-block btn-ghost" id="saveProfileBtn">
+            <span>Create Study Profile</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="auth-footer-note">
+        <span class="note-lock">🛡️</span>
+        <span>Secure Local-First Profile · Synced Across Portals</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SAGE PROVIDER MODAL ============ -->
+  <div class="sage-provider-modal hidden" id="sageProviderModal">
+    <div class="modal-card">
+      <h2>Sage provider</h2>
+      <p class="modal-sub">Select a provider + model and paste your API key.</p>
+      <label>Provider<select id="sageProvSel"></select></label>
+      <label>Model<select id="sageModelSel"></select></label>
+      <label>Custom model id (optional)<input id="sageModelOverride" type="text" placeholder="Override model id"></label>
+      <label>API key<input id="sageApiKey" type="password" placeholder="sk-..." autocomplete="off"></label>
+      <div class="modal-actions">
+        <button id="sageProvCancel">Cancel</button>
+        <button class="save-btn" id="sageProvSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ RUNNER OVERLAY (kept, unchanged) ============ -->
+  <div class="runner-overlay" id="runnerOverlay" hidden>
+    <div class="runner" id="runnerPanel" role="dialog" aria-modal="true" aria-label="Question runner">
+      <!-- built by JS -->
+    </div>
+  </div>
+  <!-- ============ TOPBAR (fixed, full-width) ============ -->
+  <header class="topbar" id="topbar">
+    <div class="topbar-left">
+      <button type="button" class="icon-btn burger-btn" id="navBurgerBtn" aria-label="Toggle navigation menu" title="Toggle navigation menu">
+        <span class="burger-icon">☰</span>
+      </button>
+      <div class="brand" id="brandLink" title="Go to home">
+        <span class="brand-mark"><img src="/assets/brand/cca_favicon_logomark.png" alt="Claude Certified Architect" class="brand-mark-img"></span>
+        <span class="brand-text">
+          <span class="brand-title">Claude Architect</span>
+          <span class="brand-sub">Exam Center · Foundations</span>
+        </span>
+      </div>
+    </div>
+    <div class="breadcrumb" id="breadcrumb">Home</div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+        <span class="theme-icon" id="themeIcon">☀️</span>
+      </button>
+      <button class="icon-btn" id="aiProviderBtn" aria-label="Configure AI Provider" title="Configure AI Provider">⚡ AI Provider</button>
+      <button class="icon-btn" id="sageToggle" aria-label="Toggle Sage sidebar">💬 Sage</button>
+      <a href="/" class="icon-btn" target="_blank" rel="noopener" title="Open Study Hub in a new tab">📖 Study Hub</a>
+      <div class="account-menu" id="accountMenu">
+        <button type="button" class="avatar-pill" id="accountBtn" aria-label="Account menu" aria-expanded="false" style="display:none">
+          <span class="avatar" id="avatarInitial">?</span>
+          <span id="avatarName">User</span>
+        </button>
+        <div class="account-dropdown hidden" id="accountDropdown">
+          <div class="profile-card-header">
+            <div class="profile-card-avatar" id="dropdownAvatar">?</div>
+            <div class="profile-card-user">
+              <div class="profile-card-name" id="accountUserName">User</div>
+              <div class="profile-card-handle" id="accountUserHandle">@user</div>
+            </div>
+          </div>
+          <div class="profile-card-badge">
+            <span class="status-dot"></span> Active · Foundations Track
+          </div>
+          <div class="profile-card-details">
+            <div class="profile-detail-row">
+              <span class="detail-label">Certification</span>
+              <span class="detail-value">Claude Architect</span>
+            </div>
+            <div class="exam-date-editor-host" id="examDateEditor"></div>
+            <div class="profile-detail-row">
+              <span class="detail-label">Passing Target</span>
+              <span class="detail-value">720 / 1000</span>
+            </div>
+          </div>
+          <div class="profile-card-divider"></div>
+          <button type="button" class="profile-signout-btn" id="signOutBtn">
+            <span class="signout-icon">🚪</span> Sign out
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ APP GRID (full-width, below topbar) ============ -->
+  <div class="app">
+
+    <!-- ============ LEFT NAV ============ -->
+    <nav id="leftNav">
+      <div class="nav-header">
+        <span class="nav-title">Exam Center</span>
+        <button type="button" class="icon-btn nav-close" id="navClose" aria-label="Close sidebar" title="Close sidebar">×</button>
+      </div>
+      <div class="nav-section">Study</div>
+      <a class="nav-item" data-route="home"        href="#/home"><span class="icon">⌂</span> Home</a>
+      <a class="nav-item" data-route="domains"     href="#/domains"><span class="icon">≡</span> Domains</a>
+      <a class="nav-item" data-route="plan"        href="#/plan"><span class="icon">📅</span> Plan</a>
+      <a class="nav-item" data-route="performance" href="#/performance"><span class="icon">📈</span> Performance</a>
+
+      <div class="nav-section">Tests &amp; Mocks</div>
+      <a class="nav-item" data-route="quizzes"     href="#/quizzes"><span class="icon">?</span> Quizzes</a>
+      <a class="nav-item" data-route="mocks"       href="#/mocks"><span class="icon">⌚</span> Mocks</a>
+
+      <div class="nav-section">AI Tutor</div>
+      <a class="nav-item" data-route="sessions"    href="#/sessions"><span class="icon">💬</span> Sage Sessions</a>
+
+      <div class="nav-section">Reference</div>
+      <a class="nav-item" data-route="resources"   href="#/resources"><span class="icon">🔗</span> Resources</a>
+    </nav>
+
+    <!-- MAIN PANE (with persistent footer) -->
+    <main id="mainPane">
+      <div id="mainContent"></div>
+      <footer class="site-footer" id="siteFooter">
+        <div class="footer-card">
+          <div class="footer-brand-row">
+            <div>
+              <div class="footer-kicker">Built for focused study</div>
+              <div class="footer-title">Claude Certified Architect — Foundations</div>
+            </div>
+            <div class="footer-badge">Local-first dashboard</div>
+          </div>
+
+          <p class="footer-copy">
+            This dashboard stores progress locally in your browser only. Exam facts, dates, weights, and thresholds should be re-verified on the official certification page.
+          </p>
+
+          <div class="footer-meta">
+            <span>Created by Vikas Pandey</span>
+            <span class="footer-separator">•</span>
+            <a href="mailto:vikas.pandey@insight.com">vikas.pandey@insight.com</a>
+            <span class="footer-separator">•</span>
+            <a href="https://github.com/cybersecuritychuck" target="_blank" rel="noopener">GitHub</a>
+            <span class="footer-separator">•</span>
+            <a href="https://cybersecuritychuck.github.io/Portfolio-v2/" target="_blank" rel="noopener">Portfolio</a>
+            <span class="footer-separator">•</span>
+            <a href="https://linkedin.com/in/vkp1308" target="_blank" rel="noopener">LinkedIn</a>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <!-- SAGE SIDEBAR (right) -->
+    <aside id="sageSidebar" aria-label="Sage AI study coach">
+      <div class="chat-header">
+        <div class="chat-header-top">
+          <div class="chat-identity">
+            <div class="chat-avatar-badge sage-theme">🦉</div>
+            <div class="chat-meta">
+              <div class="chat-name-row">
+                <span class="chat-name">Sage</span>
+                <span class="chat-status-pill"><span class="pulse-dot"></span> Online</span>
+              </div>
+              <span class="chat-subtitle">AI Exam Prep Coach</span>
+            </div>
+          </div>
+          <div class="chat-top-actions">
+            <button type="button" id="sageCollapse" class="chat-icon-btn" title="Collapse sidebar" aria-label="Collapse sidebar">›</button>
+          </div>
+        </div>
+
+        <div class="chat-controls-bar">
+          <div class="chat-main-buttons">
+            <button type="button" id="sageNewBtn" class="chat-btn-primary" title="Start a new chat session">+ New Chat</button>
+            <button type="button" id="sageListBtn" class="chat-btn-ghost" title="Browse saved sessions">📜 Sessions</button>
+          </div>
+          <div class="chat-provider-badge" id="sageProviderBar">
+            <span id="sageProviderInfo">⚡ Provider: Not set</span>
+            <button type="button" id="openProviderBtn" class="chat-gear-link" title="Configure AI Provider">⚙️</button>
+          </div>
+        </div>
+      </div>
+      <div class="sage-log" id="sageLog">
+        <div class="sage-empty">
+          <div class="sage-empty-icon">🦉</div>
+          <h4>Hello! I'm Sage</h4>
+          <p>Your dedicated AI coach for the Claude Certified Architect certification. Ask me anything or try a prompt below:</p>
+          <div class="sage-prompt-chips">
+            <button type="button" class="sage-chip" data-prompt="What is the core agent loop and its main stages?">🚀 Agent Loop Stages</button>
+            <button type="button" class="sage-chip" data-prompt="Explain single-agent vs multi-agent orchestration trade-offs.">⚖️ Single vs Multi-agent</button>
+            <button type="button" class="sage-chip" data-prompt="What are MCP tools and resources in Claude architectures?">🔌 MCP Architecture</button>
+            <button type="button" class="sage-chip" data-prompt="Give me 3 actionable tips to score 720+ on the Foundations exam.">🎯 Exam Strategy &amp; Scoring</button>
+          </div>
+        </div>
+      </div>
+      <div class="sage-input-area">
+        <div class="sage-input-wrap">
+          <textarea id="sageInput" placeholder="Ask Sage about exam tactics, scenario questions, domains…" rows="2" aria-label="Message Sage"></textarea>
+          <button type="button" class="send-btn" id="sageSend" aria-label="Send message to Sage">
+            <span class="send-btn-icon">↑</span>
+            <span class="send-btn-label">Send</span>
+          </button>
+        </div>
+        <div class="sage-input-hint">Shift + Enter for new line · Enter to send</div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ============ SECTION BANK (hidden templates) ============ -->
+  <div id="sectionBank" style="display:none;" aria-hidden="true">
+
+    <!-- HOME section template -->
+    <section data-section="home">
+      <div class="sync-indicator">
+        <span class="sync-status" id="homeSyncStatus">Not synced with Study Hub yet.</span>
+        <button type="button" id="homeSyncBtn">Sync now</button>
+      </div>
+    </section>
+
+    <!-- DOMAINS section -->
+    <section data-section="domains">
+      <h2 class="section-title">Knowledge Domains</h2>
+      <div class="grid domains" id="domainGrid"></div>
+    </section>
+
+    <!-- QUIZZES section -->
+    <section data-section="quizzes">
+      <div class="card">
+        <h2 class="section-title">Domain Quizzes</h2>
+        <div class="set-list" id="quizList"></div>
+        <p class="empty-note" id="quizEmpty" hidden>No domain quizzes registered.</p>
+      </div>
+    </section>
+
+    <!-- MOCKS section -->
+    <section data-section="mocks">
+      <div class="card">
+        <h2 class="section-title">Practice Mocks</h2>
+        <div class="set-list" id="mockList"></div>
+        <p class="empty-note" id="mockListEmpty" hidden>No mock tests registered. Add entries to <code>data/manifest.js</code>.</p>
+      </div>
+    </section>
+
+    <!-- PLAN section -->
+    <section data-section="plan">
+      <div class="plan-header-banner">
+        <div>
+          <div class="plan-kicker">Preparation Roadmap · Claude Certified Architect</div>
+          <h2 class="section-title" style="margin: 4px 0 8px 0;">Study Plan &amp; Exam Strategy</h2>
+          <p class="plan-subtitle">A structured 4-week blueprint designed to guide you from foundational knowledge to scoring 720+ on the certification exam.</p>
+        </div>
+      </div>
+
+      <!-- Quick Exam Blueprint Metrics -->
+      <div class="plan-metrics-grid">
+        <div class="plan-metric-card">
+          <div class="metric-val">60</div>
+          <div class="metric-lbl">Exam Questions</div>
+          <div class="metric-sub">Single &amp; multi-select</div>
+        </div>
+        <div class="plan-metric-card">
+          <div class="metric-val">120 min</div>
+          <div class="metric-lbl">Time Limit</div>
+          <div class="metric-sub">2.0 min per question</div>
+        </div>
+        <div class="plan-metric-card">
+          <div class="metric-val">720 / 1000</div>
+          <div class="metric-lbl">Passing Score</div>
+          <div class="metric-sub">Scaled scoring model</div>
+        </div>
+        <div class="plan-metric-card">
+          <div class="metric-val">5</div>
+          <div class="metric-lbl">Core Domains</div>
+          <div class="metric-sub">30 total syllabus topics</div>
+        </div>
+      </div>
+
+      <!-- Phase 1 & Phase 2 Breakdown -->
+      <div class="plan-phases-grid">
+        <div class="plan-phase-card">
+          <div class="phase-header">
+            <span class="phase-badge p1">Phase 1</span>
+            <div class="phase-title-group">
+              <h3>Knowledge &amp; Domain Mastery</h3>
+              <div class="phase-range">Weeks 1 – 3 · Weight-Ordered Deep Dive</div>
+            </div>
+          </div>
+          <ul class="phase-bullet-list">
+            <li><strong>Master Core Architectures:</strong> Deep-dive into Agent Loops, Perception-Reasoning-Action cycles, and subagent orchestration.</li>
+            <li><strong>Hands-On Workflows:</strong> Practice Claude Code CLI configuration, permissions hierarchy, and MCP tool setup.</li>
+            <li><strong>Interactive Self-Checks:</strong> Complete all 30 module quizzes and review targeted flash cards in each domain.</li>
+          </ul>
+        </div>
+
+        <div class="plan-phase-card">
+          <div class="phase-header">
+            <span class="phase-badge p2">Phase 2</span>
+            <div class="phase-title-group">
+              <h3>Timed Simulation &amp; Readiness</h3>
+              <div class="phase-range">Week 4 · Full Mock Drilling &amp; Review</div>
+            </div>
+          </div>
+          <ul class="phase-bullet-list">
+            <li><strong>Full-Length Timed Mocks:</strong> Complete 60-question timed mocks under strict exam simulation conditions.</li>
+            <li><strong>Error Analysis:</strong> Re-examine missed questions against official Knowledge notes to eliminate knowledge gaps.</li>
+            <li><strong>Target Stability:</strong> Achieve consistent 80%+ raw scores before sitting for the real exam.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 5-Domain Weight Blueprint Matrix -->
+      <div class="plan-section-block">
+        <div class="block-header">
+          <div class="block-kicker">Exam Blueprint</div>
+          <h3>Domain Weighting &amp; Distribution</h3>
+        </div>
+        <div class="domain-matrix-grid">
+          <div class="matrix-card">
+            <div class="matrix-top">
+              <span class="matrix-domain-num">D1</span>
+              <span class="matrix-weight-tag high">27% (16 Qs)</span>
+            </div>
+            <h4>Agentic Architecture &amp; Orchestration</h4>
+            <p>Agent loop stages, Single vs Multi-agent trade-offs, state machines, tool gating, and error recovery.</p>
+          </div>
+          <div class="matrix-card">
+            <div class="matrix-top">
+              <span class="matrix-domain-num">D2</span>
+              <span class="matrix-weight-tag medium">20% (12 Qs)</span>
+            </div>
+            <h4>Claude Code Configuration &amp; Workflows</h4>
+            <p>Project configuration (`CLAUDE.md`), permissions model, custom slash commands, hooks, and tool rules.</p>
+          </div>
+          <div class="matrix-card">
+            <div class="matrix-top">
+              <span class="matrix-domain-num">D3</span>
+              <span class="matrix-weight-tag medium">20% (12 Qs)</span>
+            </div>
+            <h4>Prompt Engineering &amp; Structured Output</h4>
+            <p>XML formatting, schema extraction, thinking modes, deterministic JSON generation, and prompt chaining.</p>
+          </div>
+          <div class="matrix-card">
+            <div class="matrix-top">
+              <span class="matrix-domain-num">D4</span>
+              <span class="matrix-weight-tag medium">18% (11 Qs)</span>
+            </div>
+            <h4>Tool Design &amp; MCP Integration</h4>
+            <p>MCP servers/clients, tool schemas, transport mechanisms (stdio/SSE), resource URI templates, and sandboxing.</p>
+          </div>
+          <div class="matrix-card">
+            <div class="matrix-top">
+              <span class="matrix-domain-num">D5</span>
+              <span class="matrix-weight-tag standard">15% (9 Qs)</span>
+            </div>
+            <h4>Context Management &amp; Reliability</h4>
+            <p>Prompt caching strategies, context window optimization, compaction techniques, and HITL governance.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4-Week Detailed Weekly Milestones -->
+      <div class="plan-section-block">
+        <div class="block-header">
+          <div class="block-kicker">Weekly Milestones</div>
+          <h3>4-Week Structured Study Timeline</h3>
+        </div>
+        <div class="timeline-grid">
+          <div class="timeline-card">
+            <div class="timeline-week-pill">Week 1</div>
+            <h4>Agentic Core &amp; Orchestration</h4>
+            <ul class="timeline-tasks">
+              <li>Master Agent loop perception, reasoning, and tool dispatch cycles.</li>
+              <li>Implement routing routers, evaluator-optimizer loops, and parallel agents.</li>
+              <li>Complete Domain 1 section quiz with 85%+ score.</li>
+            </ul>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-week-pill">Week 2</div>
+            <h4>Claude Code &amp; Prompt Engineering</h4>
+            <ul class="timeline-tasks">
+              <li>Configure `CLAUDE.md` memory files and multi-directory hierarchical rules.</li>
+              <li>Implement robust XML tagged prompts and JSON structured schemas.</li>
+              <li>Complete Domain 2 &amp; Domain 3 quizzes and review edge cases.</li>
+            </ul>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-week-pill">Week 3</div>
+            <h4>Tool Design, MCP &amp; Context Caching</h4>
+            <ul class="timeline-tasks">
+              <li>Build Model Context Protocol (MCP) clients and stdio server integrations.</li>
+              <li>Apply Anthropic Prompt Caching breakpoints for token and latency savings.</li>
+              <li>Complete Domain 4 &amp; Domain 5 quizzes.</li>
+            </ul>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-week-pill">Week 4</div>
+            <h4>Mock Simulations &amp; Exam Readiness</h4>
+            <ul class="timeline-tasks">
+              <li>Take at least three full 60-question timed practice mock exams.</li>
+              <li>Review time pacing: aim for 80 minutes on first pass + 25 minutes review.</li>
+              <li>Solidify Human-In-The-Loop (HITL) safety and governance guidelines.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exam Day Tactics & Strategy -->
+      <div class="plan-section-block">
+        <div class="block-header">
+          <div class="block-kicker">Tactical Playbook</div>
+          <h3>Exam Day Success Tactics</h3>
+        </div>
+        <div class="tactics-grid">
+          <div class="tactic-card">
+            <div class="tactic-icon">⏱</div>
+            <h4>Pacing Discipline</h4>
+            <p>Allocate ~1.5 to 2 minutes per question. If a scenario is ambiguous, make an educated guess, flag it for review, and move forward.</p>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-icon">🎯</div>
+            <h4>Multi-Select Precision</h4>
+            <p>Pay strict attention to "Select TWO" or "Select THREE" question stems. Evaluate every single option independently before confirming.</p>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-icon">🛡</div>
+            <h4>Security &amp; HITL Default</h4>
+            <p>Whenever an agent action is irreversible (e.g. database DROP, remote deployment, secret alteration), Human-In-The-Loop confirmation is mandatory.</p>
+          </div>
+          <div class="tactic-card">
+            <div class="tactic-icon">⚡</div>
+            <h4>Prompt Caching Rules</h4>
+            <p>Remember that prompt caching requires exact prefix matching and minimum token thresholds (1024 tokens on Sonnet/Opus).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section data-section="performance">
+      <h2 class="section-title">Performance &amp; Score Trends</h2>
+      <div class="card">
+        <div class="auto-score-note">
+          Scores are logged automatically from each completed section quiz and mock.
+        </div>
+
+        <div class="performance-insights" id="performanceInsights">
+          <div class="insight-header">
+            <div>
+              <div class="insight-kicker">Performance summary</div>
+              <h3>Progress & trend</h3>
+            </div>
+            <button type="button" id="generateInsightBtn" class="ghost">AI summary</button>
+          </div>
+          <div class="insight-body" id="insightBody">
+            <p class="insight-placeholder">Complete a quiz or mock to start tracking your improvement trend.</p>
+          </div>
+        </div>
+
+        <form id="mockForm" class="mock-form">
+          <div class="field">
+            <label for="mDate">Date</label>
+            <input type="date" id="mDate" required>
+          </div>
+          <div class="field">
+            <label for="mScore">Raw score (0–60)</label>
+            <input type="number" id="mScore" min="0" max="60" required>
+          </div>
+          <button type="submit" class="primary">Log score</button>
+        </form>
+
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Raw /60</th><th>Est. scaled</th><th>Result</th><th></th></tr>
+          </thead>
+          <tbody id="mockTbody"></tbody>
+        </table>
+        <p class="empty-note" id="mockEmpty">No mock attempts logged yet. Add one above to start tracking your trend.</p>
+        <div class="chart-wrap" id="chartWrap" hidden>
+          <svg id="mockChart" width="640" height="240" role="img" aria-label="Line chart of estimated scaled scores over time"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAGE SESSIONS section -->
+    <section data-section="sessions">
+      <h2 class="section-title">Sage AI Coaching Sessions</h2>
+      <div class="card">
+        <div class="sessions-header">
+          <div>
+            <div class="sessions-title">Past Conversations</div>
+            <p class="sessions-sub">Browse, resume in the Sage sidebar, or delete past AI coaching sessions.</p>
+          </div>
+          <button type="button" class="primary" id="sessionsNewBtn">+ New Session</button>
+        </div>
+        <div id="sessionsListContainer" class="sessions-list-container">
+          <p class="empty-note">Loading sessions…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESOURCES section -->
+    <section data-section="resources">
+      <h2 class="section-title">Resources</h2>
+      <div class="card">
+        <div class="res-subtitle">Official links</div>
+        <div class="res-grid">
+          <a href="https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification" target="_blank" rel="noopener">Certification page<span class="u">anthropic-partners.skilljar.com</span></a>
+          <a href="https://anthropic-partners.skilljar.com/page/partner-certifications" target="_blank" rel="noopener">Partner Academy certifications<span class="u">anthropic-partners.skilljar.com/page/partner-certifications</span></a>
+          <a href="https://anthropic-partners.skilljar.com/page/faq-certifications" target="_blank" rel="noopener">Certification FAQ<span class="u">anthropic-partners.skilljar.com/page/faq-certifications</span></a>
+          <a href="https://docs.anthropic.com" target="_blank" rel="noopener">Anthropic docs<span class="u">docs.anthropic.com</span></a>
+          <a href="https://docs.claude.com" target="_blank" rel="noopener">Claude docs<span class="u">docs.claude.com</span></a>
+          <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP docs<span class="u">modelcontextprotocol.io</span></a>
+          <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building effective agents<span class="u">anthropic.com/engineering/building-effective-agents</span></a>
+          <a href="https://github.com/anthropics/courses" target="_blank" rel="noopener">Anthropic courses<span class="u">github.com/anthropics/courses</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOOLBAR (reset button, shown only on certain sections) -->
+    <div class="toolbar" data-section-toolbar>
+      <button class="danger" id="resetBtn">Reset all progress</button>
+    </div>
+
+  </div>
+
+  <!-- Manifest MUST load before app.js so the engine can render the lists -->
+  <script src="data/manifest.js"></script>
+  <script src="/shared/ai-config.js?v=1"></script>
+  <script src="/shared/exam-date.js?v=1"></script>
+  <script src="assets/app.js?v=5"></script>
+</body>
+</html>

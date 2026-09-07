@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "labs": [
+    {
+      "title": "Lab 0 — Getting Started with Free Claude.ai",
+      "steps": [
+        {
+          "text": "step-1-go-to-https-claude-ai-and",
+          "slug": "step-1-go-to-https-claude-ai-and",
+          "done": false
+        },
+        {
+          "text": "step-2-start-a-new-chat-send-h",
+          "slug": "step-2-start-a-new-chat-send-h",
+          "done": false
+        },
+        {
+          "text": "step-3-note-the-model-name-shown",
+          "slug": "step-3-note-the-model-name-shown",
+          "done": false
+        },
+        {
+          "text": "step-4-send-a-follow-up-in-the-same",
+          "slug": "step-4-send-a-follow-up-in-the-same",
+          "done": false
+        },
+        {
+          "text": "step-5-open-a-brand-new-chat-and",
+          "slug": "step-5-open-a-brand-new-chat-and",
+          "done": false
+        }
+      ]
+    }
+  ]
+}

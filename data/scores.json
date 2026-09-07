@@ -1,0 +1,15 @@
+[
+  {
+    "mode": "quiz",
+    "setId": "quiz-d1",
+    "domainKey": "d1",
+    "correct": 9,
+    "total": 10,
+    "pct": 90,
+    "pass": true,
+    "scaled": null,
+    "autoSubmitted": false,
+    "ts": 1788285605724,
+    "date": "2026-09-01"
+  }
+]
